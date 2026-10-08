@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haunted Pumpkin Patch</title>
+<meta name="description" content="Haunted Pumpkin Patch: a pixel-art Halloween clicker game with prestige, upgrades and achievements.">
+<meta name="theme-color" content="#130a20">
+<meta property="og:title" content="Haunted Pumpkin Patch">
+<meta property="og:description" content="A pixel-art Halloween clicker. Carve candy, build a haunt, rise from the grave.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%83%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2a1442;--p:#3a1d5c;--p2:#4b2776;--tx:#ffe9c4;--or:#ff8a1f;--ye:#ffe45e;--gr:#7be35a;--rd:#ff7b7b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#130a20;--p:#211033;--p2:#301850}}
+:root[data-theme="dark"]{--bg:#130a20;--p:#211033;--p2:#301850}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:10px/1.6 'Press Start 2P','Courier New',monospace;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+canvas{image-rendering:pixelated}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--ye);outline-offset:2px}
+.px{border:4px solid #000;box-shadow:inset 4px 4px #ffffff33,inset -4px -4px #00000066,0 4px #00000088}
+#bg{position:absolute;left:0;top:0;width:100%;height:100%;z-index:-1}
+@keyframes tw{50%{opacity:.35}}
+#app{position:relative;height:100%;display:flex;flex-direction:column}
+#left{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;text-align:center}
+h1{margin:0;font-size:10px;color:var(--or);text-shadow:2px 2px #000}
+#count{font-size:18px;color:var(--ye);text-shadow:3px 3px #000;white-space:nowrap}
+#cps{font-size:8px;margin-top:4px}
+#pump{background:none;border:0;padding:0;line-height:0;-webkit-tap-highlight-color:transparent}
+#pc{display:block;width:min(56vw,32vh,320px);height:auto;transition:transform .06s steps(2)}
+@media(hover:hover){#pump:hover #pc{transform:scale(1.04)}}
+#pump.hit #pc{transform:scale(.93)}
+#news{width:100%;box-sizing:border-box;padding:6px;background:#000b;color:var(--ye);font-size:8px;min-height:4.4em;text-align:left}
+#right{flex:1;min-height:0;overflow-y:auto;padding:8px;background:var(--p);border-top:4px solid #000}
+h2{margin:8px 0 6px;font-size:10px;font-weight:400;color:var(--or);display:flex;justify-content:space-between;align-items:center}
+#ups{display:flex;flex-wrap:wrap;gap:4px;min-height:44px}
+.u{width:44px;height:44px;padding:0;background:var(--p2);display:grid;place-items:center}
+.u.no{opacity:.45}
+#info{min-height:5em;margin:6px 0;padding:6px;background:#0007;font-size:8px}
+.q button{padding:2px 5px;margin-left:3px;background:var(--p2);border:3px solid #000;font-size:8px}
+.q button.on{background:var(--or);color:#000}
+.b{display:flex;align-items:center;gap:8px;box-sizing:border-box;width:100%;padding:6px 8px;margin-bottom:6px;background:var(--p2);text-align:left}
+.b.no{opacity:.5}
+.b .t{flex:1;min-width:0}
+.b b{display:block;margin-bottom:4px;font-weight:400}
+.b i{font-style:normal;color:var(--gr);font-size:9px}
+.b.no i{color:var(--rd)}
+.b .n{font-size:18px;color:#ffffff66}
+#rst{display:block;margin:10px auto 4px;padding:6px 10px;background:#5a1d1d;font-size:8px}
+.fl{position:fixed;z-index:9;pointer-events:none;color:#fff;text-shadow:2px 2px #000;font-size:12px;transform:translate(-50%,0);animation:fl .9s steps(9) forwards}
+@keyframes fl{to{transform:translate(-50%,-70px);opacity:0}}
+.pt{position:fixed;z-index:9;width:6px;height:6px;pointer-events:none;animation:pt .6s steps(6) forwards}
+@keyframes pt{to{transform:translate(var(--x),var(--y));opacity:0}}
+#bat{position:fixed;z-index:10;border:0;background:none;padding:0;line-height:0;animation:bob .5s steps(2) infinite alternate}
+@keyframes bob{to{margin-top:-8px}}
+#left{position:relative;z-index:0;overflow:hidden}
+#aud{position:absolute;top:8px;right:8px;display:flex;gap:4px}
+#aud button{width:32px;height:32px;padding:0;background:var(--p2);display:grid;place-items:center}
+#ach{display:flex;flex-wrap:wrap;gap:4px}
+.a{width:32px;height:32px}
+.lk{opacity:.3}
+#ainfo{min-height:4em;margin:6px 0;padding:6px;background:#0007;font-size:8px}
+#toasts{position:fixed;z-index:20;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.ts{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--p2);font-size:8px;animation:ts 4s steps(24) forwards}
+@keyframes ts{0%{transform:translateY(80px)}8%,88%{transform:none}100%{transform:translateY(80px);opacity:0}}
+button.px:active{transform:translateY(3px);box-shadow:inset 4px 4px #ffffff22,inset -4px -4px #00000066}
+.b:hover:not(.no){background:#5d3590}
+.rain{position:absolute;top:-24px;z-index:-1;pointer-events:none;animation:rn 5s steps(50) forwards}
+@keyframes rn{to{transform:translateY(900px)}}
+#start{position:fixed;left:0;top:0;right:0;bottom:0;z-index:50;display:grid;place-items:center;background:#0b0418ee;text-align:center;padding:16px}
+#start>div{max-width:340px;padding:16px;background:var(--p)}
+#start h1{font-size:14px;margin-bottom:12px}
+#start p{font-size:8px;line-height:1.8;margin:8px 0}
+#go{margin-top:8px;padding:10px 14px;background:var(--or);color:#000;font-size:12px}
+#stage{position:relative;display:flex;justify-content:center;align-items:center;margin:14px 0}
+#hands{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+#menu{display:flex;gap:6px}
+#menu button{padding:6px 8px;background:var(--p2);font-size:8px}
+#menu button.hot{background:var(--or);color:#000}
+#tabs{display:flex;gap:4px;margin-bottom:6px}
+#tabs button{flex:1;padding:6px 2px;background:var(--p2);border:3px solid #000;font-size:8px}
+#tabs button.on{background:var(--or);color:#000}
+.pn{display:none}.pn.on{display:block}
+.hr{padding:6px;margin-bottom:8px;background:#1a0b2e}
+.hh{display:flex;justify-content:space-between;gap:6px}
+.hs{font-size:7px;margin:4px 0}
+.hr button{margin-top:6px;padding:4px 6px;background:var(--p2);font-size:7px}
+#hinfo{min-height:4em;margin:6px 0;padding:6px;background:#0007;font-size:8px}
+button:disabled{opacity:.4;cursor:default}
+#modal{display:none;position:fixed;left:0;top:0;right:0;bottom:0;z-index:40;background:#0b0418ee;overflow:auto;padding:12px}
+#modal.on{display:block}
+#modal>div{max-width:420px;margin:0 auto;padding:12px;background:var(--p)}
+#modal h1{font-size:12px;margin-bottom:8px}
+#mb{font-size:8px;line-height:1.9}
+#mb .r{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0}
+#mb textarea{width:100%;height:80px;box-sizing:border-box;background:#000;color:var(--gr);font:8px 'Courier New',monospace;user-select:text;-webkit-user-select:text}
+#mb button,#mx{margin:6px 6px 0 0;padding:6px 8px;background:var(--p2);font-size:8px}
+#left h1{margin-right:112px;max-width:calc(100% - 120px);text-align:center;line-height:1.4}
+#mbar{height:14px;background:#000;border:3px solid #000;margin:6px 0}
+#mbar i{display:block;height:100%;width:0;background:#6fb0ff}
+@media(min-width:760px){
+ #app{flex-direction:row}
+ #left{flex:1;justify-content:center;gap:16px}
+ #count{font-size:26px}#cps{font-size:10px}h1{font-size:14px}
+ #left h1{margin-right:0;max-width:none}
+ #pc{width:min(32vw,60vh,460px)}
+ #news{max-width:520px}
+ #right{flex:none;width:360px;border-top:0;border-left:4px solid #000}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div id="toasts"></div>
+<noscript>This game needs JavaScript. Please turn it on to play.</noscript>
+<div id="modal"><div class="px"><h1 id="mt"></h1><div id="mb"></div><button id="mx" class="px">Close</button></div></div>
+<div id="start"><div class="px"><h1>Haunted Pumpkin Patch</h1><p>Carve candy from a haunted jack-o-lantern and build a spooky empire.</p><p>Sound and music are on. Turn the volume up and silent mode off.</p><button id="go" class="px">Tap to play</button></div></div>
+<div id="app">
+ <section id="left">
+  <canvas id="bg"></canvas>
+  <h1>Haunted Pumpkin Patch</h1>
+  <div id="aud"><button id="bm" class="px" aria-label="Toggle music"></button><button id="bs" class="px" aria-label="Toggle sound effects"></button><button id="bn" class="px" aria-label="Next song"></button></div>
+  <div><div id="count">0 candy</div><div id="cps"></div></div>
+  <div id="stage"><canvas id="hands"></canvas><button id="pump" aria-label="Click the jack-o-lantern to collect candy"><canvas id="pc" width="48" height="46"></canvas></button></div>
+  <div id="news" class="px"></div>
+  <div id="menu"><button id="m-st" class="px">Stats</button><button id="m-op" class="px">Options</button><button id="m-as" class="px">Ascend</button></div>
+ </section>
+ <aside id="right">
+  <div id="tabs"><button data-t="st" class="on">Store</button><button data-t="hn">Haunt</button><button data-t="sp">Spells</button><button data-t="tr">Trophies</button></div>
+  <div id="p-st" class="pn on">
+  <h2>Upgrades</h2>
+  <div id="ups"></div>
+  <div id="info">Upgrades appear here as you grow your haunt.</div>
+  <h2>Store <span class="q"><button data-m="0" class="on">Buy</button><button data-m="1">Sell</button></span></h2>
+  <div class="q" style="margin-bottom:6px"><button data-q="1" class="on">x1</button><button data-q="10">x10</button><button data-q="100">x100</button><button data-q="0">Max</button></div>
+  <div id="blds"></div></div>
+  <div id="p-hn" class="pn"><h2>Your Haunt <span id="sdn"></span></h2><div id="hnt"></div><h2>Owned upgrades</h2><div id="ou"></div><div id="hinfo">Tap an upgrade to see what it does.</div></div>
+  <div id="p-sp" class="pn"><h2>Spellbook <span id="mnn"></span></h2><div id="mbar"><i></i></div><div id="spl"></div></div>
+  <div id="p-tr" class="pn">
+  <h2>Achievements <span id="acn"></span></h2>
+  <div id="ach"></div>
+  <div id="ainfo">Tap a trophy to see how to earn it.</div>
+  </div>
+ </aside>
+</div>
+<script>
+const $=s=>document.querySelector(s),K='haunted-pumpkin-v2';
+// name, base cost, candy/sec, 8x8 bitmap, color
+const B=[
+['Skeleton Hand',15,.1,[0x2A,0x2A,0x7E,0x7F,0x7E,0x3C,0x18,0x18],'#e8e0c8'],
+['Candy Pail',100,1,[0x3C,0x42,0xFF,0x7E,0x5A,0x7E,0x66,0x3C],'#ff8a1f'],
+['Friendly Ghost',1100,8,[0x3C,0x7E,0x5A,0x7E,0x7E,0x7E,0x7E,0x5A],'#f2f2ff'],
+['Bat Swarm',12e3,47,[0x81,0xC3,0xE7,0xFF,0xFF,0xDB,0x99,0],'#a77be6'],
+['Cauldron',13e4,260,[0x28,0x14,0xFF,0x7E,0xFF,0xFF,0x7E,0x42],'#7be35a'],
+['Haunted House',14e5,1400,[0x18,0x3C,0x7E,0xFF,0xDB,0xFF,0xE7,0xE7],'#b8c0e0'],
+['Graveyard',2e7,7800,[0x3C,0x7E,0x66,0x42,0x66,0x66,0x7E,0xFF],'#9a9ab0'],
+['Lich King',33e7,44e3,[0x3C,0x7E,0xDB,0xFF,0xE7,0x7E,0x5A,0],'#6ff0d0'],
+['Werewolf Pack',51e8,26e4,[0x81,0xC3,0xFF,0xBD,0xFF,0x7E,0x5A,0x3C],'#b0a4c8'],
+['Mummy Tomb',75e9,16e5,[0x18,0x3C,0x3C,0x7E,0x7E,0xFF,0xFF,0xE7],'#e0c070'],
+['Zombie Horde',1e12,1e7,[0x2A,0x2A,0x3E,0x3E,0x1C,0x08,0x08,0xFF],'#7bd34b'],
+['Banshee Choir',14e12,65e6,[0x3C,0x7E,0xDB,0xFF,0xE7,0xC3,0x7E,0x3C],'#9fe8ff'],
+['Dark Portal',17e13,43e7,[0x3C,0x7E,0xE7,0xC3,0xC3,0xE7,0x7E,0x3C],'#c06bff'],
+['Eldritch Horror',21e14,29e8,[0x3C,0x42,0x99,0xA5,0xA5,0x99,0x42,0x3C],'#ff5a8a'],
+['Pumpkin King',26e15,21e9,[0x2A,0x3E,0x7E,0xFF,0xDB,0xFF,0xE7,0x7E],'#ffb02e']];
+const CA=[0,0x42,0xDB,0xFF,0xFF,0xDB,0x42,0];
+const U=[];
+[[100,'Sharper Knife'],[500,'Steady Hands'],[1e4,'Pumpkin Spice'],[1e5,'Midnight Hour'],[1e6,'Blood Moon']].forEach(([c,n])=>U.push({n,c,k:'c',d:'Clicking is twice as strong.'}));
+B.forEach((b,i)=>[[1,10,'Cursed'],[5,50,'Haunted'],[25,500,'Ancient']].forEach(([r,m,p])=>U.push({n:p+' '+b[0],c:b[1]*m,k:i,r,d:b[0]+' output x2.'+(i?'':' Clicks too!')})));
+[[1e5,'Ghostly Fingers',25],[1e7,'Spectral Fingers',50],[1e9,'Phantom Fingers',100]].forEach(([c,n,r])=>U.push({n,c,k:'f',r,d:'Hands and clicks gain more power for every other building you own.'}));
+U.sort((a,b)=>a.c-b.c);
+const UM={};U.forEach(u=>{UM[u.n]=u});
+function uic(u){return typeof u.k==='number'?[B[u.k][3],B[u.k][4]]:u.k==='f'?[B[0][3],'#b8f0ff']:[CA,'#ff4fa0']}
+function vis(u){return u.k==='c'?s.L>=u.c/2:s.b[typeof u.k==='number'?u.k:0]>=u.r}
+const N=['Local ghost denies haunting, says he was just passing through.','Pumpkin reports feeling gourd-geous, asks you to stop poking him.','Neighborhood kids demand full-size bars. Candy industry trembles.','Skeletons agree: bones are overrated, candy is not.',"Witch's cauldron recalled after soup gains sentience.",'Study finds 9 out of 10 bats prefer hanging out upside down.','Breaking: the moon is full again. Details at 11.','Candy corn debate continues to divide the nation.','The skeleton hands union has filed a grievance about overtime.','A trick-or-treater asked if the pumpkin takes cards. It does not.','Scientists confirm ghosts are 40 percent more productive after midnight.','Local bat very proud of its golden complexion.','Mummy tomb opens a new wing, mostly gift shop.','Zombie horde asks for brains, settles for candy.','Weather report: fog with a chance of screaming.','Astronomers confirm the Blood Moon is just the moon being dramatic.','Spellbook hiccups; three pumpkins briefly became pie.','Local ghost reviews the spellbook: two stars, too many typos.'];
+
+const fresh=()=>({c:0,e:0,L:0,k:0,b:B.map(()=>0),u:[],a:[],bt:0,lv:B.map(()=>0),sd:0,nl:Date.now()+12e5,pt:0,sp:0,ps:[],as:0,mn:30,sc:0,bmc:0,fl:0,t:Date.now(),go:Date.now()});
+function ld(d){s=Object.assign(fresh(),d);const z=fresh();for(const k in z)if(typeof z[k]==='number'?!isFinite(s[k]):(Array.isArray(z[k])&&!Array.isArray(s[k])))s[k]=z[k];while(s.b.length<B.length){s.b.push(0);s.lv.push(0)}}
+let s=fresh(),q=1,sm=0,fz=0,cfz=0,bmz=0,sel=-1,nt,rs=0,tab='st',hsg='';
+try{const d=JSON.parse(localStorage.getItem(K));if(d&&Array.isArray(d.b))ld(d)}catch(_){}
+
+const save=()=>{try{s.t=Date.now();localStorage.setItem(K,JSON.stringify(s))}catch(_){}};
+const SU=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];
+const fmt=n=>{if(n<1e4)return Math.floor(n).toLocaleString('en-US');const i=Math.min(Math.floor(Math.log10(n)/3),11);return(n/1e3**i).toFixed(2)+SU[i]};
+const fd=n=>n<10?String(Math.round(n*10)/10):fmt(n);
+const nu=k=>s.u.filter(n=>UM[n]&&UM[n].k===k).length;
+const mul=()=>(Date.now()<fz?7:1)*(Date.now()<bmz?2:1);
+const PU=k=>s.ps.includes(k),cf=()=>Date.now()<cfz?777:1,tot=()=>s.b.reduce((a,v)=>a+v,0),gain=g=>{if(!isFinite(g)||g<0)return;s.c+=g;s.e+=g;s.L+=g},
+ fg=()=>{const n=nu('f');return n?.1*5**(n-1)*(tot()-s.b[0]):0},
+ pm=()=>(1+s.a.length*.01)*(1+s.pt*.02)*(PU('sh')?1.5:1),
+ bp=i=>s.b[i]*(B[i][2]+(i?0:fg()))*2**nu(i)*(1+.05*s.lv[i])*pm(),
+ cps=()=>B.reduce((a,b,i)=>a+bp(i),0)*mul();
+const cp=()=>((1+fg())*2**(nu('c')+nu(0))*pm()+(PU('sf')?cps()/mul()*.01:0))*mul()*cf();
+const dc=()=>PU('gd')?.95:1,cost=(i,n)=>Math.ceil(B[i][1]*1.15**s.b[i]*(1.15**n-1)/.15*dc()),
+ sellv=(i,n)=>Math.floor(B[i][1]*1.15**(s.b[i]-n)*(1.15**n-1)/.15*dc()*.25),
+ maxn=i=>Math.max(0,Math.floor(Math.log(1+Math.floor(s.c)*.15/(B[i][1]*1.15**s.b[i]*dc()))/Math.log(1.15))),
+ qn=i=>q?q:sm?s.b[i]:Math.max(1,maxn(i));
+const hov=matchMedia('(hover:hover)').matches;
+
+function say(t){$('#news').textContent=t;clearTimeout(nt);nt=setTimeout(rot,9e3)}
+function rot(){const c=[];if(s.b[0]>=10)c.push('The skeleton hands are getting a little too good at this.');if(s.b[2]>=10)c.push('A tour group got lost among your ghosts. They like it here.');if(s.pt>0)c.push('Rumor: the souls you collected are throwing a graveyard party.');if(s.b[7]>0)c.push('The Lich King demands his candy tax. Politely.');const a=c.concat(N);say(a[Math.random()*a.length|0])}
+
+// 8x8 bitmap -> small canvas with a hard drop shadow
+function ico(m,col,z){
+ const c=document.createElement('canvas'),x=c.getContext('2d'),h=col.slice(1).match(/../g).map(v=>parseInt(v,16)),
+  sh=f=>'rgb('+h.map(v=>Math.max(0,Math.min(255,v*f|0))).join()+')',
+  on=(i,y)=>i>=0&&i<8&&y>=0&&y<8&&(m[y]>>7-i&1);
+ c.width=c.height=10;c.style.cssText=`width:${z}px;height:${z}px`;
+ for(let y=-1;y<9;y++)for(let i=-1;i<9;i++){
+  if(on(i,y)){const t=!on(i,y-1)||!on(i-1,y),b=!on(i,y+1)||!on(i+1,y);x.fillStyle=t&&!b?sh(1.4):b&&!t?sh(.6):sh(1.05-y*.05);x.fillRect(i+1,y+1,1,1)}
+  else if(on(i-1,y)||on(i+1,y)||on(i,y-1)||on(i,y+1)){x.fillStyle='#120414';x.fillRect(i+1,y+1,1,1)}
+ }
+ return c}
+
+// the jack-o-lantern: lit, ribbed, dithered body drawn once; the carved face flickers every frame
+const PB=document.createElement('canvas'),FP=[];PB.width=48;PB.height=46;
+function buildP(){
+ const c=PB.getContext('2d'),cx=24,cy=24,rx=21,ry=16,pal=['#4a1700','#8f3100','#d95a08','#ff8a1f','#ffae42','#ffd27a'],BY=[[0,2],[3,1]],
+  I=(x,y)=>((x+.5-cx)/rx)**2+((y+.5-cy)/ry)**2<=1;
+ c.fillStyle='#00000066';for(let y=-3;y<=3;y++){const w=Math.round(19*Math.sqrt(1-(y/4)**2));c.fillRect(24-w,43+y,2*w,1)}
+ c.fillStyle='#1b0a00';c.fillRect(20,2,8,9);c.fillRect(26,1,4,2);
+ c.fillStyle='#3d8a2c';c.fillRect(21,3,6,8);c.fillRect(26,2,3,1);c.fillStyle='#6bc24a';c.fillRect(21,3,2,8);c.fillStyle='#256a1c';c.fillRect(25,3,2,8);
+ for(let y=0;y<46;y++)for(let x=0;x<48;x++){
+  if(!I(x,y))continue;
+  const dx=(x+.5-cx)/rx,dy=(y+.5-cy)/ry,r2=dx*dx+dy*dy,z=Math.sqrt(Math.max(0,1-r2)),u=dx/Math.sqrt(Math.max(1-dy*dy,.05)),sx=dx+.22*Math.sin(u*Math.PI*4),gr=(1-Math.cos(u*Math.PI*4))/2;
+  const l=.3+.9*Math.max(0,-.5*sx-.55*dy+.67*z)-gr*.3-Math.max(0,r2-.78)*.9+(dy>.55?(dy-.55)*.35:0);
+  let col=pal[Math.max(0,Math.min(5,Math.round(l*5+(BY[y&1][x&1]-1.5)/4)))];
+  if(Math.hypot(x-14,(y-15)*1.3)<2.2)col='#fff1c8';
+  if(!(I(x-1,y)&&I(x+1,y)&&I(x,y-1)&&I(x,y+1)))col='#1b0a00';
+  c.fillStyle=col;c.fillRect(x,y,1,1);
+ }
+ const F={},add=(x,y)=>{F[x+','+y]=1};
+ [15,32].forEach(ex=>{for(let r=0;r<6;r++)for(let i=ex-r;i<=ex+r;i++)add(i,17+r)});
+ for(let r=0;r<3;r++)for(let i=23-r;i<=24+r;i++)add(i,25+r);
+ for(let x=11;x<=36;x++){const yt=34-Math.round(((x-23.5)/12.5)**2*4),o=(x-11)%8;for(let r=0;r<4;r++){if(r<2&&o<3)continue;if(r>=2&&o>=4&&o<=6)continue;add(x,yt+r)}}
+ Object.keys(F).forEach(k=>{const [x,y]=k.split(',').map(Number);FP.push([x,y,!F[x+','+(y-1)]||!F[(x-1)+','+y]])});
+}
+function drawP(on){
+ const c=$('#pc').getContext('2d');if(on)hot=Date.now()+110;
+ const h=Date.now()<hot,fl=Math.random()*.9,gl=FLM[s.fl||0];
+ c.clearRect(0,0,48,46);c.drawImage(PB,0,0);
+ FP.forEach(([x,y,w])=>{const d=Math.hypot((x-23.5)/1.5,y-33),k=Math.max(0,Math.min(4,Math.floor((1-d/20)*4+fl+(h?1.2:0))));c.fillStyle=w?'#5a1f00':gl[k];c.fillRect(x,y,1,1)});
+}
+
+// floating text + pixel sparks
+function mk(cl,x,y,css,t){const e=document.createElement('div');e.className=cl;e.style.cssText=`left:${x}px;top:${y}px;`+css;if(t)e.textContent=t;e.onanimationend=()=>e.remove();document.body.append(e)}
+function hit(x,y){
+ const g=cp();gain(g);s.k++;clk();
+ mk('fl',x,y-24,'','+'+fd(g));
+ for(let i=0;i<7;i++){const a=Math.random()*6.28,d=25+Math.random()*45;mk('pt',x,y,`background:${['#ff8a1f','#ffe45e','#fff7b8'][i%3]};--x:${Math.cos(a)*d|0}px;--y:${Math.sin(a)*d|0}px`)}
+ const p=$('#pump');p.classList.add('hit');drawP(1);setTimeout(()=>{p.classList.remove('hit');drawP(0)},90);ui();
+}
+$('#pump').addEventListener('pointerdown',e=>{e.preventDefault();hit(e.clientX,e.clientY)});
+$('#pump').onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();const r=$('#pc').getBoundingClientRect();hit(r.left+r.width/2,r.top+r.height/2)}};
+
+// store
+const bl=$('#blds'),ug=$('#ups');
+B.forEach((b,i)=>{const e=document.createElement('button');e.className='b px';e.append(ico(b[3],b[4],40));
+ e.insertAdjacentHTML('beforeend','<span class="t"><b>'+b[0]+'</b><i></i></span><span class="n"></span>');
+ e.onclick=()=>buy(i);bl.append(e)});
+function info(i){const u=U[i];$('#info').innerHTML='<span style="color:var(--ye)">'+u.n+'</span><br>'+u.d+'<br><span style="color:var(--gr)">'+fmt(u.c)+' candy</span>'}
+U.forEach((u,i)=>{const e=document.createElement('button');e.className='u px';
+ const [m,c]=uic(u);e.append(ico(m,c,30));
+ e.onmouseenter=()=>info(i);
+ e.onclick=()=>{if(hov||sel===i){if(s.c<u.c){say('Not enough candy yet!');sf(120,.15,'sawtooth',.07,80);return}s.c-=u.c;s.u.push(u.n);hsg='';sel=-1;$('#info').textContent='Upgrade bought!';arp([523,659,784,1047],.07);ui()}else{sel=i;info(i)}};
+ ug.append(e)});
+document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q=+b.dataset.q;document.querySelectorAll('[data-q]').forEach(x=>x.classList.toggle('on',x===b));ui()});
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{sm=+b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b));ui()});
+function ui(){
+ $('#count').textContent=fmt(s.c)+' candy';
+ $('#cps').textContent='per second: '+fd(cps())+(mul()>1?'  BOOST x'+mul()+'!':'')+(cf()>1?'  CLICK FRENZY!':'');
+ document.title=fmt(s.c)+' candy | Haunted Pumpkin Patch';chk();
+ [...bl.children].forEach((e,i)=>{const n=qn(i),m=Math.min(n,s.b[i]),v=sm?sellv(i,m):cost(i,n);e.classList.toggle('no',sm?!m:s.c<v);e.style.display=i<2||s.b[i]||s.L>=B[i][1]/2?'':'none';e.querySelector('i').textContent=(sm?'Sell '+m+' for ':n>1?'x'+n+': ':'')+fmt(v)+' candy';e.querySelector('.n').textContent=s.b[i]||''});
+ [...ug.children].forEach((e,i)=>{const u=U[i],on=!s.u.includes(u.n)&&vis(u);e.style.display=on?'':'none';e.classList.toggle('no',s.c<u.c)});
+ if(tab==='hn')hz();if(tab==='sp')spu();const pn=pend();$('#m-as').textContent=pn?'Ascend +'+pn:'Ascend';$('#m-as').classList.toggle('hot',pn>0);
+}
+
+// ---- audio: synthesized with Web Audio (sfx, ambience, 3 songs with drums) ----
+let O={x:1,m:1,t:0},AC,mus,sg,NB,nx=0,st=0,cb=0,cbt=0,hot=0;
+try{O=Object.assign(O,JSON.parse(localStorage.getItem(K+'-o')))}catch(_){}
+const MU=[0x18,0x1C,0x18,0x18,0x18,0x78,0xF8,0x70],SP=[0x08,0x18,0xF9,0xFB,0xFB,0xF9,0x18,0x08],NX=[0x00,0x44,0x66,0x77,0x77,0x66,0x44,0x00],TR=[0x7E,0xFF,0xBD,0x7E,0x3C,0x18,0x18,0x3C];
+const J=a=>a.join('');
+const TK=[
+ {n:'Haunted Hill',s:.19,w:['triangle','square','square'],D:'k.h.k.h.',b:0,C:[[0,3,7,12],[-4,0,3,8],[-5,-1,2,7],[-7,-4,0,5]],P:[0,1,3,2,0,1,2,2],A:[0,1,2,3,2,1,2,1],M:J(['7873','8753','5752','b7bc','cbc7','8c83','7b72','b.b.'])},
+ {n:'Graveyard Bells',s:.24,w:['triangle','sine','triangle'],D:'k...h...',b:0,C:[[-5,-2,2,7],[-9,-5,-2,3],[0,3,7,12],[2,6,9,14]],P:[0,1,2,3,0,1,3,0],A:[0,1,2,3,2,1,3,1],M:J(['7e7a','7a73','37c7','69e9','e7a7','a7a3','9e96','7.7.'])},
+ {n:'Midnight Chase',s:.13,w:['triangle','square','sawtooth'],D:'k.hsk.hs',b:1,C:[[-7,-4,0,5],[-11,-7,-4,1],[-9,-5,-2,3],[0,4,7,12]],P:[0,1,2,3,0,1,3,3],A:[0,2,1,3,0,2,1,3],M:J(['58c8','d858','fa7a','47c7','c8c5','d8d5','7c74','7c7.'])}
+];
+function tn(f,d,ty,v,sl,t,o){const x=AC.createOscillator(),g=AC.createGain();x.type=ty;x.frequency.setValueAtTime(f,t);if(sl)x.frequency.exponentialRampToValueAtTime(sl,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);x.connect(g);g.connect(o);x.start(t);x.stop(t+d+.02)}
+function nz(f,d,v,t,o,ty){const h=AC.createBufferSource(),g=AC.createGain(),b=AC.createBiquadFilter();h.buffer=NB;h.loop=true;b.type=ty||'highpass';b.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);h.connect(b);b.connect(g);g.connect(o);h.start(t);h.stop(t+d+.02)}
+const sf=(f,d,ty,v,sl,dl)=>{if(AC&&O.x)tn(f,d,ty,v*3,sl,AC.currentTime+(dl||0),sg)};
+const arp=(a,gp,ty)=>a.forEach((f,i)=>sf(f,.16,ty||'square',.07,0,i*gp));
+function clk(){const t=Date.now();cb=t-cbt<350?Math.min(cb+1,12):0;cbt=t;sf(300+cb*35+Math.random()*40,.08,'square',.1,150+cb*10)}
+function au(){
+ if(AC){if(AC.state!=='running')AC.resume();return}
+ try{navigator.audioSession.type='playback'}catch(_){}
+ AC=new(window.AudioContext||window.webkitAudioContext)();
+ const mg=AC.createGain(),cm=AC.createDynamicsCompressor();mg.connect(cm);cm.connect(AC.destination);
+ mus=AC.createGain();sg=AC.createGain();mus.connect(mg);sg.connect(mg);
+ NB=AC.createBuffer(1,4410,AC.sampleRate);NB.getChannelData(0).forEach((_,i,a)=>{a[i]=Math.random()*2-1});
+ if(/iP(hone|ad|od)|Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1){try{const d=AC.createMediaStreamDestination(),a=new Audio();a.srcObject=d.stream;a.play().catch(()=>{})}catch(_){}}
+ const b=AC.createBufferSource();b.buffer=AC.createBuffer(1,1,22050);b.connect(AC.destination);b.start(0);
+ AC.resume();nx=AC.currentTime+.1;setInterval(sched,80);snd();
+}
+['pointerdown','pointerup','touchend','click','keydown'].forEach(e=>addEventListener(e,au,true));
+function dr(c,t){
+ if(c==='k'){const x=AC.createOscillator(),g=AC.createGain();x.frequency.setValueAtTime(160,t);x.frequency.exponentialRampToValueAtTime(40,t+.12);g.gain.setValueAtTime(.6,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);x.connect(g);g.connect(mus);x.start(t);x.stop(t+.16)}
+ else if(c==='s')nz(1500,.13,.35,t,mus);else if(c==='h')nz(7000,.04,.14,t,mus)
+}
+function sched(){
+ if(!AC||AC.state!=='running'||!O.m)return;
+ if(nx<AC.currentTime)nx=AC.currentTime+.05;
+ const T=TK[O.t];
+ while(nx<AC.currentTime+.3){
+  const i=st%64,b=i>>3,k=i&7,c=T.C[T.P[b]],ev=!(k&1),m=T.M[b*4+(k>>1)];
+  if(T.b||ev)tn(110*2**(c[0]/12),T.s*1.6,T.w[0],.3,0,nx,mus);
+  tn(220*2**(c[T.A[k]]/12),T.s*.8,T.w[1],.1,0,nx,mus);
+  if(ev&&m!=='.')tn(440*2**(parseInt(m,36)/12),T.s*2.2,T.w[2],.12,0,nx,mus);
+  dr(T.D[k],nx);
+  nx+=T.s*(mul()>1?.7:1);st++;
+ }
+}
+// spooky ambience: wolf howl, bell toll, distant thunder
+function amb(){
+ if(!AC||!O.x||AC.state!=='running')return;
+ const r=Math.random(),t=AC.currentTime;
+ if(r<.34){const x=AC.createOscillator(),l=AC.createOscillator(),lg=AC.createGain(),g=AC.createGain();x.frequency.setValueAtTime(300,t);x.frequency.linearRampToValueAtTime(620,t+.9);x.frequency.linearRampToValueAtTime(380,t+2.2);l.frequency.value=6;lg.gain.value=14;l.connect(lg);lg.connect(x.frequency);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.2,t+.5);g.gain.linearRampToValueAtTime(.0001,t+2.4);x.connect(g);g.connect(sg);l.start(t);x.start(t);l.stop(t+2.5);x.stop(t+2.5)}
+ else if(r<.67){sf(165,2.5,'sine',.1);sf(398,1.8,'sine',.06);sf(667,1.2,'sine',.04)}
+ else nz(400,1.6,.5,t,sg,'lowpass')
+}
+setInterval(amb,22e3);
+const BM=$('#bm'),BS=$('#bs'),BN=$('#bn');
+BM.append(ico(MU,'#ffe45e',20));BS.append(ico(SP,'#ffe45e',20));BN.append(ico(NX,'#ffe45e',20));
+function snd(){BM.style.opacity=O.m?1:.35;BS.style.opacity=O.x?1:.35;if(AC){mus.gain.value=O.m?.55:0;sg.gain.value=O.x?1:0}try{localStorage.setItem(K+'-o',JSON.stringify(O))}catch(_){}}
+BM.onclick=()=>{O.m^=1;snd()};BS.onclick=()=>{O.x^=1;snd();sf(660,.08,'square',.07)};
+BN.onclick=()=>{O.t=(O.t+1)%TK.length;st=0;O.m=1;snd();say('Now playing: '+TK[O.t].n)};
+$('#go').onclick=()=>{arp([392,523,659,784],.08,'triangle');$('#start').remove();setTimeout(()=>{if(AC&&AC.state!=='running')say('Sound is blocked. Raise the volume, turn off silent mode, then tap anywhere.')},900)};
+
+// ---- scenery: night sky, moon, hills, graveyard, dead tree, candy rain ----
+function fit(){const d=innerWidth>=760,w=Math.min(innerWidth*(d?.32:.56),innerHeight*(d?.6:.32),460),pw=Math.max(3,Math.round(w/48))*48,W=Math.round(Math.min($('#left').clientWidth||innerWidth,pw*1.9)/3),h=$('#hands');$('#pc').style.width=pw+'px';h.width=h.height=W;h.style.width=h.style.height=W*3+'px'}
+function scene(){
+ const r=$('#left').getBoundingClientRect(),z=4,W=Math.ceil(r.width/z),H=Math.ceil(r.height/z),cv=$('#bg'),x=cv.getContext('2d');
+ if(!W||!H)return;cv.width=W;cv.height=H;
+ let sd=7;const R=()=>(sd=sd*16807%2147483647)/2147483647,px=(i,y,c)=>{x.fillStyle=c;x.fillRect(i|0,y|0,1,1)};
+ const BMn=Date.now()<bmz,sk=BMn?['#1a0206','#2a0510','#40081a','#5a0c24','#7a1030','#a01a3a']:['#07021a','#0f0630','#1a0a45','#2b1058','#45186a','#6a2475'],hz=H*.8;
+ for(let y=0;y<H;y++)for(let i=0;i<W;i++){const t=Math.min(y/hz,1)*5,b=t|0;px(i,y,sk[Math.min(5,b+(t-b>[[0,.5],[.75,.25]][y&1][i&1]?1:0))])}
+ for(let n=0;n<W*H/80;n++)px(R()*W,R()*hz*.75,['#ffe9a8','#ffffff','#9fb4ff'][n%3]);
+ const mx=W*.78,my=H*.15,mr=Math.max(6,Math.min(W,H)*.08),m3=Math.ceil(mr)+3;
+ for(let y=-m3;y<=m3;y++)for(let i=-m3;i<=m3;i++){const d=Math.hypot(i,y);if(d<=mr){const l=(-i-y)/(mr*1.4);px(mx+i,my+y,l>.35?(BMn?'#ff9a8a':'#fff6cf'):l>-.2?(BMn?'#ff5a4a':'#f1dc9a'):(BMn?'#b02a2a':'#cdb36a'))}else if(d<mr+3&&((i+y)&1))px(mx+i,my+y,'#ffe9a833')}
+ [[-.3,-.25,.2],[.3,.2,.15],[-.15,.45,.1]].forEach(([a,b,s])=>{for(let y=-3;y<=3;y++)for(let i=-3;i<=3;i++)if(Math.hypot(i,y)<=s*mr)px(mx+a*mr+i,my+b*mr+y,'#d6c07a')});
+ [['#1d0c38',.74,.04,.05],['#140826',.82,.06,.04]].forEach(([c,bf,fr,am],k)=>{x.fillStyle=c;for(let i=0;i<W;i++)x.fillRect(i,(H*bf+Math.sin(i*fr+k*2)*H*am)|0,1,H)});
+ x.fillStyle='#0d0518';x.fillRect(0,H*.9|0,W,H);
+ for(let n=0;n<W/7;n++){const i=R()*W|0,y=(H*.88+R()*H*.1)|0,w=3+(R()*2|0),h=5+(R()*3|0);x.fillStyle='#2b1a47';x.fillRect(i,y-h,w,h);x.fillRect(i+1,y-h-1,w-2,1);x.fillStyle='#3f2a66';x.fillRect(i,y-h,1,h)}
+ const L=(x0,y0,x1,y1)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0))|1;for(let k=0;k<=n;k++)px(x0+(x1-x0)*k/n,y0+(y1-y0)*k/n,'#0a0310')},
+  T=(x0,y0,l,a,d)=>{if(d<0)return;const x1=x0+Math.cos(a)*l,y1=y0+Math.sin(a)*l;L(x0,y0,x1,y1);T(x1,y1,l*.72,a-.5,d-1);T(x1,y1,l*.72,a+.45,d-1)};
+ T(W*.1,H*.92,H*.12,-1.57,5);
+}
+const RC=['#ff4fa0','#ffd23f','#7be35a','#ff8a1f','#6ff0d0'];
+function rain(){
+ if(Math.random()>Math.min(.3,Math.log10(cps()+1)*.05)||document.querySelectorAll('.rain').length>30)return;
+ const e=ico(CA,RC[Math.random()*5|0],20),L=$('#left');e.className='rain';e.style.left=Math.random()*(L.clientWidth-20)+'px';e.style.animationDuration=4+Math.random()*3+'s';e.onanimationend=()=>e.remove();L.append(e)
+}
+
+// ---- achievements ----
+const A=[],ad=(n,d,t)=>A.push({n,d,t});
+[[1,'First Treat'],[100,'Sweet Tooth'],[1e3,'Candy Stash'],[1e4,'Sugar Rush'],[1e5,'Candy Hoarder'],[1e6,'Halloween Hero'],[1e7,'Trick-or-Treat King'],[1e8,'Dentist Nightmare'],[1e9,'Candy Overlord'],[1e12,'Sugar God'],[1e15,'Candy Singularity']].forEach(([v,n])=>ad(n,'Bake '+fmt(v)+' candy in total.',()=>s.L>=v));
+[[1,'Poke'],[100,'Pumpkin Poker'],[1e3,'Carving Frenzy'],[1e4,'Click Maniac']].forEach(([v,n])=>ad(n,'Click the pumpkin '+fmt(v)+' times.',()=>s.k>=v));
+[[1,'Trickle'],[10,'Steady Stream'],[100,'Candy River'],[1e3,'Sugar Flood'],[1e4,'Sweet Tsunami'],[1e5,'Candy Cyclone'],[1e6,'Sugar Quake'],[1e7,'Confection Cataclysm'],[1e8,'Treat Apocalypse'],[1e9,'Candy Big Bang']].forEach(([v,n])=>ad(n,'Reach '+fmt(v)+' candy per second.',()=>cps()/mul()>=v));
+B.forEach((b,i)=>[[1,'Apprentice'],[10,'Adept'],[25,'Master']].forEach(([v,p])=>ad(p+' '+b[0],'Own '+v+' '+b[0]+(v>1?'s':'')+'.',()=>s.b[i]>=v)));
+[[1,'Bat Catcher'],[5,'Bat Whisperer']].forEach(([v,n])=>ad(n,'Catch '+v+' golden bat'+(v>1?'s':'')+'.',()=>s.bt>=v));
+[[1,'Upgraded'],[10,'Well Equipped'],[25,'Fully Cursed']].forEach(([v,n])=>ad(n,'Buy '+v+' upgrade'+(v>1?'s':'')+'.',()=>s.u.length>=v));
+ad('Reborn','Rise from the grave for the first time.',()=>s.as>=1);ad('Soul Collector','Reach 10 souls.',()=>s.pt>=10);ad('Grave Dancer','Reach 50 souls.',()=>s.pt>=50);ad('Soul Hoarder','Reach 200 souls.',()=>s.pt>=200);
+ad('Green Thumb','Level up a building with seeds.',()=>s.lv.some(v=>v>0));ad('Master Gardener','Reach 25 total building levels.',()=>s.lv.reduce((a,v)=>a+v,0)>=25);
+ad('Moonstruck','Witness a Blood Moon.',()=>s.bmc>=1);ad('Apprentice Mage','Cast 10 spells.',()=>s.sc>=10);ad('Archmage','Cast 100 spells.',()=>s.sc>=100);ad('Flame Collector','Own a colored candle flame.',()=>['f1','f2','f3'].some(k=>PU(k)));
+const ag=$('#ach');
+function ai(i){$('#ainfo').innerHTML='<span style="color:var(--ye)">'+(s.a.includes(A[i].n)?A[i].n:'???')+'</span><br>'+A[i].d}
+A.forEach((a,i)=>{const e=document.createElement('button');e.className='u px a lk';e.append(ico(TR,'#ffd23f',20));e.onclick=e.onmouseenter=()=>ai(i);ag.append(e)});
+function tiles(){[...ag.children].forEach((e,i)=>e.classList.toggle('lk',!s.a.includes(A[i].n)));$('#acn').textContent=s.a.length+'/'+A.length+' +'+s.a.length+'%'}
+function toast(a){const e=document.createElement('div');e.className='ts px';e.append(ico(TR,'#ffd23f',30));e.insertAdjacentHTML('beforeend','<span>Achievement unlocked<br><b style="color:var(--ye);font-weight:400">'+a.n+'</b></span>');e.onanimationend=()=>e.remove();$('#toasts').append(e)}
+function chk(q){const n=[];A.forEach(a=>{if(!s.a.includes(a.n)&&a.t()){s.a.push(a.n);n.push(a)}});if(n.length&&!q){if(n.length>2)toast({n:n.length+' new trophies!'});else if(document.querySelectorAll('.ts').length<3)n.forEach(toast);arp([523,659,784,1047,784,1047],.09,'triangle');tiles()}}
+
+// ---- v2: buying, haunt zone, orbiting hands, prestige, menus ----
+const PS=[['sf','Poltergeist Touch','Each click also gives 1% of your candy per second.',1],['bl','Bat Lure','Golden bats appear twice as often.',3],['lf','Lingering Frenzy','Frenzies last twice as long.',5],['hs','Head Start','Begin every run with 1,000 candy.',10],['oh','Offline Haunting','Earn 50% candy while away, up to 8 hours.',15],['gd','Grave Discount','Buildings cost 5% less.',25],['sh','Soul Harvest','All production x1.5.',100],['f1','Green Flame','Cosmetic: a green candle flame.',2],['f2','Blue Flame','Cosmetic: a blue candle flame.',4],['f3','Purple Flame','Cosmetic: a purple candle flame.',8],['sp','Arcane Reservoir','Mana refills twice as fast.',12],['mc','Moon Caller','Blood Moons last twice as long.',20]];
+const pend=()=>Math.max(0,Math.floor(Math.cbrt(s.L/1e9))-s.pt);
+function buy(i){const n=qn(i);
+ if(sm){const m=Math.min(n,s.b[i]);if(!m)return;s.c+=sellv(i,m);s.b[i]-=m;sf(300,.12,'triangle',.08,120)}
+ else{const c=cost(i,n);if(s.c<c){sf(120,.15,'sawtooth',.07,80);return}s.c-=c;s.b[i]+=n;arp([392,523,659],.06)}
+ hsg='';ui()}
+function seed(q){const n=Date.now();if(n>=s.nl){const k=Math.floor((n-s.nl)/12e5)+1;s.sd+=Math.min(k,30);s.nl+=k*12e5;if(!q){say('A pumpkin seed ripened! Spend seeds in the Haunt tab.');sf(880,.1,'triangle',.08)}}}
+function away(){const d=(Date.now()-s.t)/1e3;if(d>30&&PU('oh')){const g=cps()*Math.min(d,28800)*.5;if(g>0){gain(g);say('Welcome back! Your haunt made '+fmt(g)+' candy while you were away.')}}}
+function gold(){
+ const r=Math.random(),d=PU('lf')?2:1,t=Date.now();
+ if(r<.3){const g=Math.min(s.c*.15,cps()*900)+13;gain(g);say('Lucky! The golden bat dropped '+fmt(g)+' candy!')}
+ else if(r<.6){fz=t+3e4*d;sf(200,.5,'sawtooth',.06,1200);say('Frenzy! Candy production x7 for '+30*d+' seconds!')}
+ else if(r<.8){cfz=t+13e3*d;sf(300,.4,'square',.06,1500);say('Click Frenzy! Clicks are worth x777 for '+13*d+' seconds!')}
+ else{const o=B.map((_,i)=>i).filter(i=>i<2||s.b[i]||s.L>=B[i][1]/2),i=o[Math.random()*o.length|0];s.b[i]++;hsg='';say('Spirit gift! A free '+B[i][0]+' joined your haunt!')}
+ ui()}
+// haunt zone: every building you own, drawn as little sprites
+const SPR=B.map(b=>ico(b[3],b[4],10));
+function hz(){
+ $('#sdn').textContent=s.sd+' seeds, next in '+Math.ceil(Math.max(0,s.nl-Date.now())/6e4)+'m';
+ const sg=s.b.join()+'|'+s.lv.join()+'|'+s.u.length+'|'+s.sd+'|'+s.a.length+'|'+s.pt;if(sg===hsg)return;hsg=sg;
+ const h=$('#hnt'),tp=B.reduce((a,b,i)=>a+bp(i),0)||1;h.textContent='';
+ B.forEach((b,i)=>{if(!s.b[i])return;
+  const r=document.createElement('div'),n=Math.min(s.b[i],72),cv=document.createElement('canvas'),x=cv.getContext('2d'),cols=12;
+  r.className='hr px';
+  r.innerHTML='<div class="hh"><b>'+b[0]+'</b><span>x'+s.b[i]+' Lv '+s.lv[i]+'</span></div><div class="hs">each '+fd(bp(i)/s.b[i])+'/s, total '+fd(bp(i))+'/s ('+Math.round(bp(i)/tp*100)+'%)</div>';
+  cv.width=cols*12;cv.height=Math.ceil(n/cols)*12;cv.style.cssText='width:'+cv.width*2+'px;height:'+cv.height*2+'px';
+  for(let k=0;k<n;k++)x.drawImage(SPR[i],(k%cols)*12+1,((k/cols)|0)*12+1);
+  r.append(cv);
+  if(s.b[i]>72){const m=document.createElement('div');m.className='hs';m.textContent='+'+(s.b[i]-72)+' more';r.append(m)}
+  const lb=document.createElement('button');lb.className='px';lb.textContent='Level up for '+(s.lv[i]+1)+' seeds (+5%)';lb.disabled=s.sd<s.lv[i]+1;
+  lb.onclick=()=>{const c=s.lv[i]+1;if(s.sd>=c){s.sd-=c;s.lv[i]++;hsg='';sf(660,.1,'triangle',.08);ui()}};
+  r.append(lb);h.append(r)});
+ if(!tot())h.textContent='Buy a building in the Store and it will move into your haunt.';
+ const ou=$('#ou');ou.textContent='';
+ s.u.forEach(nm=>{const u=UM[nm];if(!u)return;const e=document.createElement('button'),[m,c]=uic(u);e.className='u px';e.append(ico(m,c,30));e.onclick=()=>{$('#hinfo').innerHTML='<span style="color:var(--ye)">'+u.n+'</span><br>'+u.d};ou.append(e)});
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));['st','hn','sp','tr'].forEach(k=>$('#p-'+k).classList.toggle('on',k===tab));hsg='';ui()});
+// orbiting skeleton hands: one per hand you own, rings spin and take turns clicking the pumpkin
+const HS=ico(B[0][3],'#e8e0c8',10);
+function hands(t){
+ const cv=$('#hands'),x=cv.getContext('2d'),W=cv.width,c=W/2,n=Math.min(s.b[0],140),r0=$('#pc').offsetWidth*.4375/3+7;
+ if(!W)return;x.clearRect(0,0,W,W);x.imageSmoothingEnabled=false;
+ let i=0;
+ for(let j=0;i<n&&r0+11*j+6<c;j++){
+  const R=r0+11*j,m=Math.min(Math.floor(6.28*R*.9/9),n-i),d=j%2?-1:1;
+  for(let k=0;k<m;k++,i++){
+   const a=d*t*.0003*(1+.15*j)+k/m*6.28,p=Math.pow(Math.max(0,Math.sin(t*.005+i*1.7)),8)*5,rr=R-p,px=c+Math.cos(a)*rr,py=c+Math.sin(a)*rr*.82;
+   x.save();x.translate(px|0,py|0);x.rotate(Math.atan2(c-py,c-px)+1.5708);x.drawImage(HS,-5,-5);x.restore();
+  }}
+}
+let ht=0;function hl(t){if(t-ht>40){ht=t;hands(t)}requestAnimationFrame(hl)}
+// menus
+const closeM=()=>$('#modal').classList.remove('on');
+function openM(t,h){$('#mt').textContent=t;$('#mb').innerHTML=h;$('#modal').classList.add('on')}
+$('#mx').onclick=closeM;$('#m-st').onclick=stats;$('#m-op').onclick=opts;$('#m-as').onclick=asc;
+const R=(a,b)=>'<div class="r"><span>'+a+'</span><span>'+b+'</span></div>';
+function stats(){const t=(Date.now()-s.go)/1e3;
+ openM('Stats',R('Candy in bank',fmt(s.c))+R('Baked this run',fmt(s.e))+R('Baked all time',fmt(s.L))+R('Per second',fd(cps()/mul()))+R('Per click',fd(cp()))+R('Clicks',fmt(s.k))+R('Buildings',tot())+R('Upgrades',s.u.length+'/'+U.length)+R('Trophies',s.a.length+'/'+A.length+' (+'+s.a.length+'%)')+R('Golden bats caught',s.bt)+R('Souls',s.pt+' (+'+s.pt*2+'%), '+s.sp+' to spend')+R('Ascensions',s.as)+R('Spells cast',s.sc)+R('Blood moons seen',s.bmc)+R('Seeds',s.sd)+R('Time played',(t/3600|0)+'h '+((t/60|0)%60)+'m'))}
+function opts(){
+ openM('Options','<div>Candle flame</div>'+FLN.map((n,i)=>'<button data-f="'+i+'"'+(i&&!PU('f'+i)?' disabled':'')+'>'+n+'</button>').join('')+'<div style="margin-top:8px">Save code</div><textarea id="sv"></textarea><button id="ex">Export</button><button id="im">Import</button><button id="wp">Wipe save</button><div style="margin-top:8px">Your game saves in this browser automatically. Export a code to move it to another device.</div>');
+ $('#mb').querySelectorAll('[data-f]').forEach(b=>{b.onclick=()=>{s.fl=+b.dataset.f;drawP(0);save()}});
+ $('#ex').onclick=()=>{$('#sv').value=btoa(JSON.stringify(s))};
+ $('#im').onclick=()=>{try{ld(JSON.parse(atob($('#sv').value.trim())));save();hsg='';tiles();ui();say('Save imported!');closeM()}catch(_){say('That save code did not work.')}};
+ $('#wp').onclick=e=>{const b=e.currentTarget;if(!rs){rs=1;b.textContent='Sure? Tap again';setTimeout(()=>{rs=0;b.textContent='Wipe save'},3e3)}else{rs=0;s=fresh();save();hsg='';tiles();ui();closeM();say('Save wiped.')}}}
+function buyS(k){const p=PS.find(x=>x[0]===k);if(!p||PU(k)||s.sp<p[3])return;s.sp-=p[3];s.ps.push(k);arp([523,659,784],.07,'triangle');ui()}
+function rise(){const n=pend();if(!n)return;s.pt+=n;s.sp+=n;s.as++;
+ s=Object.assign(fresh(),{L:s.L,k:s.k,a:s.a,bt:s.bt,lv:s.lv,sd:s.sd,nl:s.nl,pt:s.pt,sp:s.sp,ps:s.ps,as:s.as,mn:s.mn,sc:s.sc,bmc:s.bmc,fl:s.fl,go:s.go,c:PU('hs')?1e3:0});
+ save();hsg='';tiles();ui();closeM();say('You rose from the grave with '+n+' new souls!');arp([392,523,659,784,1047],.09,'triangle')}
+function asc(){const n=pend();
+ openM('Rise from the Grave',R('Souls',s.pt+' ('+s.sp+' to spend)')+R('Souls if you rise now','+'+n)+'<div>Each soul gives +2% candy. The next soul needs '+fmt((s.pt+n+1)**3*1e9)+' candy baked all time.</div><button id="rs"'+(n?'':' disabled')+'>Rise from the grave</button><div>Rising resets your candy, buildings and upgrades. You keep trophies, seeds, levels, souls and soul upgrades.</div>'
+  +PS.map(p=>'<div class="r"><span>'+p[1]+'<br>'+p[2]+'</span><button data-s="'+p[0]+'"'+(PU(p[0])||s.sp<p[3]?' disabled':'')+'>'+(PU(p[0])?'Owned':p[3]+' souls')+'</button></div>').join(''));
+ $('#rs').onclick=rise;
+ $('#mb').querySelectorAll('[data-s]').forEach(b=>{b.onclick=()=>{buyS(b.dataset.s);asc()}})}
+
+// ---- v3: Blood Moon, spellbook, candle flames ----
+const FLM=[['#ff8a1a','#ffb02e','#ffd84a','#fff09a','#ffffff'],['#1a8a2a','#34c24a','#7be35a','#c5ffa8','#ffffff'],['#1a4aff','#3a7aff','#6fb0ff','#b8e0ff','#ffffff'],['#6a1aa0','#9a3ad8','#c06bff','#e6b8ff','#ffffff']],FLN=['Orange','Green','Blue','Purple'];
+const mmax=()=>30+Math.floor(4*Math.sqrt(s.b[4]));
+function moon(){const d=PU('mc')?2:1;bmz=Date.now()+9e4*d;s.bmc++;say('The Blood Moon rises! Production x2 while it lasts.');sf(220,1.2,'sawtooth',.08,90);scene();bat();setTimeout(scene,9e4*d+300);ui()}
+function gift(){const o=B.map((_,i)=>i).filter(i=>i<2||s.b[i]||s.L>=B[i][1]/2),i=o[Math.random()*o.length|0];s.b[i]++;hsg='';say('A free '+B[i][0]+' joined your haunt!')}
+const SPL=[['Conjure Candy',.25,'Gain 30 minutes of production, up to 15% of your bank.',()=>{const g=Math.min(s.c*.15,cps()*1800)+13;gain(g);say('Conjured '+fmt(g)+' candy!')}],['Force Fate',.4,'Summon a golden bat right now.',bat],['Summon Spirit',.6,'A random building joins your haunt for free.',gift],['Blood Ritual',.8,'Raise the Blood Moon right now.',moon]],spr=[];
+function buildSp(){const h=$('#spl');SPL.forEach((p,i)=>{const r=document.createElement('div'),b=document.createElement('button');r.className='hr px';r.innerHTML='<div class="hh"><b>'+p[0]+'</b><span></span></div><div class="hs">'+p[2]+'</div>';b.className='px';b.textContent='Cast';b.onclick=()=>cast(i);r.append(b);h.append(r);spr.push([r.querySelector('span'),b])})}
+function cast(i){const c=Math.ceil(mmax()*SPL[i][1]);if(s.mn<c){sf(120,.15,'sawtooth',.07,80);return}s.mn-=c;SPL[i][3]();s.sc++;sf(500,.3,'sine',.1,1200);arp([659,784,988],.05,'triangle');ui()}
+function spu(){const m=mmax();$('#mnn').textContent=Math.floor(s.mn)+'/'+m;$('#mbar i').style.width=Math.min(100,s.mn/m*100)+'%';SPL.forEach((p,i)=>{const c=Math.ceil(m*p[1]);spr[i][0].textContent=c+' mana';spr[i][1].disabled=s.mn<c})}
+
+// golden bat: click for a lucky bonus or a frenzy
+function bat(){
+ const b=document.createElement('button');b.id='bat';b.setAttribute('aria-label','Golden bat, click for a bonus');b.append(ico(B[3][3],'#ffd23f',60));
+ b.style.left=Math.random()*(innerWidth-70)+'px';b.style.top=60+Math.random()*(innerHeight-160)+'px';
+ b.onclick=()=>{b.remove();s.bt++;arp([880,1175,1568],.05);gold();ui()};
+ document.body.append(b);setTimeout(()=>b.remove(),12e3);sf(1400,.12,'triangle',.06,2200);
+}
+
+fit();new ResizeObserver(()=>{fit();scene()}).observe($('#left'));setInterval(()=>drawP(0),120);
+buildP();drawP(0);say('Click the jack-o-lantern to collect candy!');away();seed(1);chk(1);tiles();snd();ui();requestAnimationFrame(hl);buildSp();
+let lt=Date.now();
+setInterval(()=>{const n=Date.now(),dt=(n-lt)/1e3,g=cps()*dt;lt=n;gain(g);s.mn=Math.min(mmax(),s.mn+mmax()/(PU('sp')?150:300)*dt);seed();ui();rain()},100);
+setInterval(save,5e3);addEventListener('visibilitychange',()=>{save();if(AC)document.hidden?AC.suspend():AC.resume()});
+(function l(t){setTimeout(()=>{bat();l((6e4+Math.random()*6e4)/(PU('bl')?2:1))},t)})(25e3);
+(function mt(t){setTimeout(()=>{if(!document.hidden)moon();mt(48e4+Math.random()*36e4)},t)})(18e4+Math.random()*12e4);
+addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+</script>
+</body>
+</html>
